@@ -1,0 +1,14 @@
+<header class="dashboard-header">
+    <h1>Welcome back, {{ user.first_name }}!</h1>
+
+    <div class="header-actions">
+        {% include "bills/atoms/icon.html" with class="fas fa-search btn-icon" %}
+        <button class="btn-icon">
+            <i class="fas fa-bell"></i>
+            <span class="badge">3</span>
+        </button>
+        <div class="user-menu">
+            {% include "bills/atoms/avatar.html" %}
+        </div>
+    </div>
+</header>

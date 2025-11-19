@@ -1,0 +1,15 @@
+<div class="stat-card"
+     style="--bg-color: {{ bg }}; --icon-color: {{ color }};">
+    
+    <div class="stat-icon">
+        <i class="{{ icon }}"></i>
+    </div>
+
+    <div class="stat-details">
+        <h3>{{ value }}</h3>
+        <p>{{ label }}</p>
+        <span class="stat-change {% if change_type %}{{ change_type }}{% endif %}">
+            {{ change_text }}
+        </span>
+    </div>
+</div>

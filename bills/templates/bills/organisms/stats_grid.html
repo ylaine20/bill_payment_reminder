@@ -1,0 +1,21 @@
+<div class="stats-grid">
+    {% include "bills/molecules/stat_card.html" with 
+        bg="#eff6ff" icon="fas fa-file-invoice" color="#3b82f6"
+        label="Total Bills" value="0" change_text="+0% from last month" change_type="positive"
+    %}
+    
+    {% include "bills/molecules/stat_card.html" with 
+        bg="#fef3c7" icon="fas fa-clock" color="#f59e0b"
+        label="Pending" value="0" change_text="Due this month" change_type=""
+    %}
+
+    {% include "bills/molecules/stat_card.html" with 
+        bg="#d1fae5" icon="fas fa-check-circle" color="#10b981"
+        label="Paid" value="0" change_text="100% on time" change_type="positive"
+    %}
+
+    {% include "bills/molecules/stat_card.html" with 
+        bg="#fee2e2" icon="fas fa-exclamation-triangle" color="#ef4444"
+        label="Overdue" value="0" change_text="Needs attention" change_type="negative"
+    %}
+</div>

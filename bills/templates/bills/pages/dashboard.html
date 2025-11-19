@@ -1,0 +1,289 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Bill Payment Reminder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background-color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav a {
+            color: #0066cc;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .nav a.active {
+            font-weight: 600;
+        }
+
+        .logout {
+            color: #0066cc;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .welcome {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+        }
+
+        .user-badge {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            background-color: #f44336;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .change-positive {
+            color: #10b981;
+        }
+
+        .change-negative {
+            color: #ef4444;
+        }
+
+        .change-neutral {
+            color: #f59e0b;
+        }
+
+        /* Color schemes for each card */
+        .total-bills .stat-icon {
+            background-color: #e8f4ff;
+            color: #3B82F6;
+        }
+
+        .pending-bills .stat-icon {
+            background-color: #fff4e6;
+            color: #F59E0B;
+        }
+
+        .paid-bills .stat-icon {
+            background-color: #e8f5e9;
+            color: #10B981;
+        }
+
+        .overdue-bills .stat-icon {
+            background-color: #fee;
+            color: #EF4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="brand">PayRemind</div>
+        <div class="nav">
+            <a href="{% url 'dashboard' %}" class="active">Dashboard</a>
+            <a href="{% url 'bills_list' %}">Bills</a>
+            <a href="{% url 'reminders' %}">Reminders</a>
+            <a href="{% url 'reports' %}">Reports</a>
+            <a href="{% url 'settings' %}">Settings</a>
+        </div>
+        <div class="logout" onclick="logout()">Logout</div>
+    </div>
+
+    <div class="container">
+        <h1 class="welcome">Welcome back, {{ username }}!</h1>
+
+        <div class="user-badge">
+            {% if notification_count > 0 %}
+            <span class="badge-count">{{ notification_count }}</span>
+            {% endif %}
+            {{ user_initials }}
+        </div>
+
+        <div class="stats-grid">
+            <!-- Total Bills Card -->
+            <div class="stat-card total-bills">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div class="stat-label">Total Bills</div>
+                </div>
+                <div class="stat-value">{{ total_bills }}</div>
+                <div class="stat-change change-positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>{{ total_change }}</span>
+                </div>
+            </div>
+
+            <!-- Pending Bills Card -->
+            <div class="stat-card pending-bills">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-value">{{ pending_bills }}</div>
+                <div class="stat-change change-neutral">
+                    <i class="fas fa-calendar"></i>
+                    <span>Due this month</span>
+                </div>
+            </div>
+
+            <!-- Paid Bills Card -->
+            <div class="stat-card paid-bills">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-label">Paid</div>
+                </div>
+                <div class="stat-value">{{ paid_bills }}</div>
+                <div class="stat-change change-positive">
+                    <i class="fas fa-check"></i>
+                    <span>This month</span>
+                </div>
+            </div>
+
+            <!-- Overdue Bills Card -->
+            <div class="stat-card overdue-bills">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-label">Overdue</div>
+                </div>
+                <div class="stat-value">{{ overdue_bills }}</div>
+                <div class="stat-change change-negative">
+                    <i class="fas fa-bell"></i>
+                    <span>Needs attention</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = "{% url 'logout' %}";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+# Django files to ignore
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+
+# Windows & Python system files
+venv/
+env/
+.env
+/DLLs
+/Lib
+/Scripts
+.DS_Store
