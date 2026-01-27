@@ -39,13 +39,12 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <hr>
-                    
+
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="text-muted small">Amount</label>
-                            <h3 class="text-primary">${{ bill.amount }}</h3>
+                            <h3 class="text-primary mb-0">Amount: ₱{{ bill.amount }}</h3>
                         </div>
                         <div class="col-md-6">
                             <label class="text-muted small">Category</label>
@@ -54,7 +53,7 @@
                             </p>
                         </div>
                     </div>
-                    
+
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="text-muted small">Due Date</label>
@@ -78,7 +77,7 @@
                             </p>
                         </div>
                     </div>
-                    
+
                     {% if bill.payment_date %}
                     <div class="row mb-3">
                         <div class="col-12">
@@ -87,7 +86,7 @@
                         </div>
                     </div>
                     {% endif %}
-                    
+
                     {% if bill.notes %}
                     <div class="row mb-3">
                         <div class="col-12">
@@ -96,7 +95,7 @@
                         </div>
                     </div>
                     {% endif %}
-                    
+
                     <!-- Receipt Image Section -->
                     {% if bill.receipt_image %}
                     <hr>
@@ -104,19 +103,21 @@
                         <div class="col-12">
                             <label class="text-muted small">Receipt/Bill Image</label>
                             <div class="mt-2">
-                                <img src="{{ bill.receipt_image.url }}" alt="{{ bill.name }} receipt" class="img-fluid border rounded" style="max-width: 100%; height: auto;">
+                                <img src="{{ bill.receipt_image.url }}" alt="{{ bill.name }} receipt"
+                                    class="img-fluid border rounded" style="max-width: 100%; height: auto;">
                             </div>
                             <div class="mt-2">
-                                <a href="{{ bill.receipt_image.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <a href="{{ bill.receipt_image.url }}" target="_blank"
+                                    class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-download"></i> View Full Size
                                 </a>
                             </div>
                         </div>
                     </div>
                     {% endif %}
-                    
+
                     <hr>
-                    
+
                     <div class="d-flex gap-2 justify-content-between">
                         <a href="{% url 'bills-list' %}" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Back to List

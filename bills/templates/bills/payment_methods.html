@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Methods - Bill Payment Reminder{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-credit-card-fill text-success"></i> Payment Methods</h1>
+        <a href="{% url 'bill-create' %}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left"></i> Back to Add Bill
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Existing Payment Methods -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-wallet2"></i> Your Payment Methods</h5>
+                </div>
+                <div class="card-body">
+                    {% if payment_methods %}
+                    <div class="row g-3">
+                        {% for pm in payment_methods %}
+                        <div class="col-md-6">
+                            <div class="card h-100 border-success">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="card-title mb-1">
+                                                <i class="bi {{ pm.icon }} text-success"></i>
+                                                {{ pm.name }}
+                                            </h5>
+                                            <span class="badge bg-secondary">{{ pm.get_method_type_display }}</span>
+                                        </div>
+                                        <a href="{% url 'delete_payment_method' pm.id %}"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Delete this payment method?')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                    {% if pm.account_details %}
+                                    <p class="card-text text-muted small mt-2 mb-0">
+                                        <i class="bi bi-info-circle"></i> {{ pm.account_details }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-credit-card text-muted" style="font-size: 4rem;"></i>
+                        <h5 class="text-muted mt-3">No payment methods added yet</h5>
+                        <p class="text-muted">Add your first payment method using the form on the right.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Add New Payment Method -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Add New Method</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Method Name</label>
+                            {{ pm_form.name }}
+                            <small class="form-text text-muted">e.g., "GCash", "BDO Savings"</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Type</label>
+                            {{ pm_form.method_type }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Account Details (Optional)</label>
+                            {{ pm_form.account_details }}
+                            <small class="form-text text-muted">Account number, notes, etc.</small>
+                        </div>
+                        <button type="submit" name="add_payment_method" class="btn btn-success w-100">
+                            <i class="bi bi-plus-circle"></i> Add Payment Method
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Tips -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h6><i class="bi bi-lightbulb text-warning"></i> Quick Tips</h6>
+                    <ul class="small text-muted mb-0">
+                        <li>Add all your payment accounts for easy tracking</li>
+                        <li>Set a default method for quick bill entry</li>
+                        <li>Include account details for reference</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

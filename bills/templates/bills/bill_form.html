@@ -14,84 +14,99 @@
                 <div class="card-body">
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                        
+
                         {% if form.non_field_errors %}
-                            <div class="alert alert-danger">
-                                {{ form.non_field_errors }}
-                            </div>
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
                         {% endif %}
-                        
+
                         <div class="mb-3">
                             <label for="{{ form.name.id_for_label }}" class="form-label">Bill Name *</label>
                             {{ form.name }}
                             {% if form.name.errors %}
-                                <div class="text-danger">{{ form.name.errors }}</div>
+                            <div class="text-danger">{{ form.name.errors }}</div>
                             {% endif %}
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="{{ form.amount.id_for_label }}" class="form-label">Amount *</label>
                                 {{ form.amount }}
                                 {% if form.amount.errors %}
-                                    <div class="text-danger">{{ form.amount.errors }}</div>
+                                <div class="text-danger">{{ form.amount.errors }}</div>
                                 {% endif %}
                             </div>
-                            
+
                             <div class="col-md-6 mb-3">
                                 <label for="{{ form.due_date.id_for_label }}" class="form-label">Due Date *</label>
                                 {{ form.due_date }}
                                 {% if form.due_date.errors %}
-                                    <div class="text-danger">{{ form.due_date.errors }}</div>
+                                <div class="text-danger">{{ form.due_date.errors }}</div>
                                 {% endif %}
                             </div>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
                                 {{ form.category }}
                                 {% if form.category.errors %}
-                                    <div class="text-danger">{{ form.category.errors }}</div>
+                                <div class="text-danger">{{ form.category.errors }}</div>
                                 {% endif %}
                             </div>
-                            
+
                             <div class="col-md-6 mb-3">
                                 <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
                                 {{ form.status }}
                                 {% if form.status.errors %}
-                                    <div class="text-danger">{{ form.status.errors }}</div>
+                                <div class="text-danger">{{ form.status.errors }}</div>
                                 {% endif %}
                             </div>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="{{ form.notes.id_for_label }}" class="form-label">Notes</label>
                             {{ form.notes }}
                             {% if form.notes.errors %}
-                                <div class="text-danger">{{ form.notes.errors }}</div>
+                            <div class="text-danger">{{ form.notes.errors }}</div>
                             {% endif %}
                         </div>
-                        
+
                         <div class="mb-3">
-                            <label for="{{ form.receipt_image.id_for_label }}" class="form-label">{{ form.receipt_image.label }}</label>
+                            <label for="{{ form.receipt_image.id_for_label }}" class="form-label">
+                                <i class="bi bi-upload"></i> Upload Receipt/Proof of Payment
+                            </label>
                             {{ form.receipt_image }}
                             {% if form.receipt_image.errors %}
-                                <div class="text-danger">{{ form.receipt_image.errors }}</div>
+                            <div class="text-danger">{{ form.receipt_image.errors }}</div>
                             {% endif %}
-                            <small class="form-text text-muted">Upload a receipt image (optional)</small>
+                            <small class="form-text text-muted">Attach a receipt, screenshot, or document
+                                (optional)</small>
                         </div>
-                        
+
                         <div class="mb-3 form-check">
                             {{ form.recurring }}
                             <label class="form-check-label" for="{{ form.recurring.id_for_label }}">
                                 {{ form.recurring.label }}
                             </label>
                             {% if form.recurring.errors %}
-                                <div class="text-danger">{{ form.recurring.errors }}</div>
+                            <div class="text-danger">{{ form.recurring.errors }}</div>
                             {% endif %}
                         </div>
-                        
+
+                        <!-- Recurrence Frequency (shown when recurring is checked) -->
+                        <div class="mb-3" id="recurrenceFrequencyWrapper" style="display: none;">
+                            <label for="{{ form.recurrence_frequency.id_for_label }}" class="form-label">
+                                <i class="bi bi-arrow-repeat"></i> Repeat Every
+                            </label>
+                            {{ form.recurrence_frequency }}
+                            {% if form.recurrence_frequency.errors %}
+                            <div class="text-danger">{{ form.recurrence_frequency.errors }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Select how often this bill repeats</small>
+                        </div>
+
                         <div class="d-flex justify-content-between mt-4">
                             <a href="{% url 'dashboard' %}" class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> Cancel
@@ -106,4 +121,48 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const recurringCheckbox = document.getElementById('id_recurring');
+        const frequencyWrapper = document.getElementById('recurrenceFrequencyWrapper');
+        const frequencySelect = document.getElementById('id_recurrence_frequency');
+
+        function toggleFrequency() {
+            if (recurringCheckbox && recurringCheckbox.checked) {
+                frequencyWrapper.style.display = 'block';
+                // If frequency is 'none', default to 'monthly' for better UX
+                if (frequencySelect && frequencySelect.value === 'none') {
+                    frequencySelect.value = 'monthly';
+                }
+            } else {
+                frequencyWrapper.style.display = 'none';
+                // Reset to 'none' when unchecked
+                if (frequencySelect) {
+                    frequencySelect.value = 'none';
+                }
+            }
+        }
+
+        // Initial state
+        toggleFrequency();
+
+        // Listen for changes
+        if (recurringCheckbox) {
+            recurringCheckbox.addEventListener('change', toggleFrequency);
+        }
+
+        // Debug: Log form values on submit
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function () {
+                console.log('[DEBUG] Form Submit:');
+                console.log('  recurring:', recurringCheckbox?.checked);
+                console.log('  frequency:', frequencySelect?.value);
+            });
+        }
+    });
+</script>
 {% endblock %}

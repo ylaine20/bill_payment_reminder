@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings - Bill Payment Reminder{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-gear-fill text-primary"></i> Settings</h1>
+    </div>
+
+    <div class="row g-4">
+        <!-- Preferences -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-sliders"></i> Preferences</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="email_reminders_enabled"
+                                    id="emailReminders" {% if preferences.email_reminders_enabled %}checked{% endif %}>
+                                <label class="form-check-label" for="emailReminders">
+                                    <i class="bi bi-envelope"></i> Enable email reminders
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Days before due date to remind</label>
+                            <input type="number" class="form-control" name="remind_days_before"
+                                value="{{ preferences.remind_days_before }}" min="1" max="30">
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="daily_digest_enabled"
+                                    id="dailyDigest" {% if preferences.daily_digest_enabled %}checked{% endif %}>
+                                <label class="form-check-label" for="dailyDigest">
+                                    <i class="bi bi-calendar-day"></i> Receive daily bill summary
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="dark_mode" id="darkMode" {% if preferences.dark_mode %}checked{% endif %}>
+                                <label class="form-check-label" for="darkMode">
+                                    <i class="bi bi-moon-stars"></i> Dark mode
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" name="save_preferences" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Preferences
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-link-45deg"></i> Quick Links</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="{% url 'payment_methods' %}"
+                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-credit-card text-success"></i>
+                                <strong>Payment Methods</strong>
+                                <p class="mb-0 small text-muted">Add, view, or remove payment methods</p>
+                            </div>
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                        <a href="{% url 'dashboard' %}"
+                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-piggy-bank text-warning"></i>
+                                <strong>Budget Goals</strong>
+                                <p class="mb-0 small text-muted">Manage your spending limits by category</p>
+                            </div>
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Data -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="bi bi-download"></i> Export Data</h5>
+                </div>
+                <div class="card-body">
+                    <p>Download your bill data for backup or analysis.</p>
+                    <div class="btn-group">
+                        <a href="{% url 'export_csv' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-filetype-csv"></i> Export CSV
+                        </a>
+                        <a href="{% url 'export_pdf' %}" class="btn btn-outline-danger">
+                            <i class="bi bi-filetype-pdf"></i> Export Report (HTML)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
