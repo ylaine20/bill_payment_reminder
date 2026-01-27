@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit {{ user_obj.email }} - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Header -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Admin</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'admin_user_list' %}">Users</a></li>
+                    <li class="breadcrumb-item active">Edit {{ user_obj.email }}</li>
+                </ol>
+            </nav>
+
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-pencil"></i> Edit User</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Basic Info -->
+                        <h6 class="text-muted mb-3">Basic Information</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name</label>
+                                <input type="text" name="first_name" class="form-control"
+                                    value="{{ user_obj.first_name }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" name="last_name" class="form-control"
+                                    value="{{ user_obj.last_name }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" value="{{ user_obj.email }}" required>
+                        </div>
+
+                        {% if request.user.is_superuser %}
+                        <hr>
+                        <h6 class="text-muted mb-3">Roles & Permissions</h6>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if
+                                    user_obj.is_active %}checked{% endif %} {% if user_obj==request.user %}disabled{%
+                                    endif %}>
+                                <label class="form-check-label" for="is_active">
+                                    <strong>Active Account</strong>
+                                    <small class="text-muted d-block">User can log in and access the system</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="is_staff" id="is_staff" {% if
+                                    user_obj.is_staff %}checked{% endif %}>
+                                <label class="form-check-label" for="is_staff">
+                                    <strong>Staff Status</strong>
+                                    <small class="text-muted d-block">Can access admin panel and manage users</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        {% if user_obj != request.user %}
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="is_superuser" id="is_superuser" {%
+                                    if user_obj.is_superuser %}checked{% endif %}>
+                                <label class="form-check-label" for="is_superuser">
+                                    <strong>Superuser (Admin)</strong>
+                                    <small class="text-muted d-block">Full access to all features and can manage other
+                                        admins</small>
+                                </label>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endif %}
+
+                        <hr>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Save Changes
+                            </button>
+                            <a href="{% url 'admin_user_list' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

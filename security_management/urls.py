@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import admin_views
 
 from django.contrib.auth import views as auth_views
 
@@ -8,6 +9,14 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register_view, name='register'),
     path('profile/', views.profile_view, name='profile'),
+    
+    # Admin Dashboard URLs
+    path('admin-panel/', admin_views.admin_dashboard, name='admin_dashboard'),
+    path('admin-panel/users/', admin_views.admin_user_list, name='admin_user_list'),
+    path('admin-panel/users/<int:pk>/', admin_views.admin_user_detail, name='admin_user_detail'),
+    path('admin-panel/users/<int:pk>/edit/', admin_views.admin_user_edit, name='admin_user_edit'),
+    path('admin-panel/users/<int:pk>/toggle/', admin_views.admin_user_toggle_active, name='admin_user_toggle'),
+    path('admin-panel/users/<int:pk>/delete/', admin_views.admin_user_delete, name='admin_user_delete'),
     
     # Password Reset URLs
     path('password-reset/', 

@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user_obj.email }} - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Admin</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'admin_user_list' %}">Users</a></li>
+            <li class="breadcrumb-item active">{{ user_obj.email }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- User Info Card -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <div class="avatar-circle bg-primary text-white mx-auto mb-3"
+                        style="width: 80px; height: 80px; font-size: 32px;">
+                        {{ user_obj.first_name|first|default:user_obj.username|first|upper }}
+                    </div>
+                    <h4>{{ user_obj.first_name }} {{ user_obj.last_name }}</h4>
+                    <p class="text-muted">{{ user_obj.email }}</p>
+
+                    <div class="mb-3">
+                        {% if user_obj.is_superuser %}
+                        <span class="badge bg-danger">Admin</span>
+                        {% elif user_obj.is_staff %}
+                        <span class="badge bg-warning">Staff</span>
+                        {% else %}
+                        <span class="badge bg-secondary">User</span>
+                        {% endif %}
+
+                        {% if user_obj.is_active %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'admin_user_edit' user_obj.pk %}" class="btn btn-primary">
+                            <i class="bi bi-pencil"></i> Edit User
+                        </a>
+                        {% if user_obj != request.user %}
+                        <a href="{% url 'admin_user_toggle' user_obj.pk %}" class="btn btn-outline-warning">
+                            <i class="bi bi-power"></i> {% if user_obj.is_active %}Deactivate{% else %}Activate{% endif
+                            %}
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Details -->
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Account Details</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Username:</strong> {{ user_obj.username }}</p>
+                    <p class="mb-2"><strong>Joined:</strong> {{ user_obj.date_joined|date:"M d, Y" }}</p>
+                    <p class="mb-2"><strong>Last Login:</strong> {{ user_obj.last_login|date:"M d, Y
+                        H:i"|default:"Never" }}</p>
+                    <p class="mb-0"><strong>Email Verified:</strong>
+                        {% if user_obj.is_email_verified %}
+                        <i class="bi bi-check-circle text-success"></i> Yes
+                        {% else %}
+                        <i class="bi bi-x-circle text-danger"></i> No
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bills & Activity -->
+        <div class="col-md-8">
+            <!-- Stats -->
+            <div class="row g-3 mb-4">
+                <div class="col-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="mb-0">{{ total_bills }}</h3>
+                            <small class="text-muted">Total Bills</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="mb-0 text-warning">{{ pending_bills }}</h3>
+                            <small class="text-muted">Pending</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="mb-0 text-success">{{ paid_bills }}</h3>
+                            <small class="text-muted">Paid</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Bills -->
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0"><i class="bi bi-receipt"></i> Recent Bills</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Bill</th>
+                                    <th>Amount</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for bill in bills %}
+                                <tr>
+                                    <td>{{ bill.name }}</td>
+                                    <td>₱{{ bill.amount }}</td>
+                                    <td>{{ bill.due_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        {% if bill.status == 'paid' %}
+                                        <span class="badge bg-success">Paid</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">No bills found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-circle {
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
