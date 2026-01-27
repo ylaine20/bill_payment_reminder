@@ -61,7 +61,6 @@
                         <tr>
                             <th>User</th>
                             <th>Email</th>
-                            <th>Bills</th>
                             <th>Joined</th>
                             <th>Role</th>
                             <th>Status</th>
@@ -85,7 +84,6 @@
                                 </div>
                             </td>
                             <td>{{ user.email }}</td>
-                            <td><span class="badge bg-light text-dark">{{ user.bill_count }}</span></td>
                             <td>{{ user.date_joined|date:"M d, Y" }}</td>
                             <td>
                                 {% if user.is_superuser %}

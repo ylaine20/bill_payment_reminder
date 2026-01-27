@@ -82,13 +82,6 @@ def admin_user_list(request):
     elif status == 'inactive':
         users = users.filter(is_active=False)
     
-    # Annotate with bill count (using proper related name)
-    try:
-        users = users.annotate(bill_count=Count('bill_set'))
-    except Exception:
-        # Fallback if annotation fails
-        users = users.annotate(bill_count=Count('bill'))
-    
     # Pagination
     paginator = Paginator(users.order_by('-date_joined'), 10)
     page = request.GET.get('page', 1)
