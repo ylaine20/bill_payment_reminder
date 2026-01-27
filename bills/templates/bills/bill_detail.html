@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ bill.name }} - Bill Payment Reminder{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0"><i class="bi bi-receipt"></i> Bill Details</h3>
+                    <div class="btn-group">
+                        <a href="{% url 'bill-update' bill.pk %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <a href="{% url 'bill-delete' bill.pk %}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small">Bill Name</label>
+                            <h4>{{ bill.name }}</h4>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <label class="text-muted small">Status</label>
+                            <div>
+                                {% if bill.status == 'paid' %}
+                                <span class="badge bg-success fs-6">
+                                    <i class="bi bi-check-circle"></i> Paid
+                                </span>
+                                {% else %}
+                                <span class="badge bg-warning fs-6">
+                                    <i class="bi bi-clock"></i> Pending
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small">Amount</label>
+                            <h3 class="text-primary">${{ bill.amount }}</h3>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Category</label>
+                            <p class="mb-0">
+                                <span class="badge bg-secondary fs-6">{{ bill.get_category_display }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small">Due Date</label>
+                            <p class="mb-0">
+                                <strong>{{ bill.due_date|date:"F d, Y" }}</strong>
+                                {% if bill.is_overdue %}
+                                <span class="badge bg-danger ms-2">Overdue</span>
+                                {% elif bill.is_due_soon %}
+                                <span class="badge bg-warning ms-2">Due Soon</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Recurring</label>
+                            <p class="mb-0">
+                                {% if bill.recurring %}
+                                <i class="bi bi-check-circle text-success"></i> Yes
+                                {% else %}
+                                <i class="bi bi-x-circle text-muted"></i> No
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if bill.payment_date %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="text-muted small">Payment Date</label>
+                            <p class="mb-0"><strong>{{ bill.payment_date|date:"F d, Y" }}</strong></p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if bill.notes %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="text-muted small">Notes</label>
+                            <p class="mb-0">{{ bill.notes }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Receipt Image Section -->
+                    {% if bill.receipt_image %}
+                    <hr>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="text-muted small">Receipt/Bill Image</label>
+                            <div class="mt-2">
+                                <img src="{{ bill.receipt_image.url }}" alt="{{ bill.name }} receipt" class="img-fluid border rounded" style="max-width: 100%; height: auto;">
+                            </div>
+                            <div class="mt-2">
+                                <a href="{{ bill.receipt_image.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-download"></i> View Full Size
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <div class="d-flex gap-2 justify-content-between">
+                        <a href="{% url 'bills-list' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to List
+                        </a>
+                        {% if bill.status == 'pending' %}
+                        <a href="{% url 'bill-pay' bill.pk %}" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Mark as Paid
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

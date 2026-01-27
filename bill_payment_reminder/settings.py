@@ -39,17 +39,15 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'bill_payment_reminder.urls'
 
 # ------------------------------
-# TEMPLATES — IMPORTANT FIX
+# TEMPLATES
 # ------------------------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-
-        # GLOBAL TEMPLATE FOLDER SUPPORT
         'DIRS': [
-            BASE_DIR / "templates",
+            BASE_DIR / 'templates',
+            BASE_DIR / 'security_management' / 'templates',
         ],
-
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -92,14 +90,11 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # ------------------------------
-# LOGIN / LOGOUT REDIRECTS
+# LOGIN / LOGOUT REDIRECTS (FIXED)
 # ------------------------------
 LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
-
-# IMPORTANT FIX:
-# Redirect users to BILLS dashboard, not old dashboard
-LOGIN_REDIRECT_URL = 'bills-dashboard'
 
 # ------------------------------
 # INTERNATIONALIZATION
@@ -110,28 +105,29 @@ USE_I18N = True
 USE_TZ = True
 
 # ------------------------------
-# STATIC FILES (IMPORTANT FIX)
+# STATIC FILES
 # ------------------------------
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",                       # global static folder
-    BASE_DIR / "security_management/static",   # old app static
-    BASE_DIR / "bills/static",                 # new atomic dashboard static
+    BASE_DIR / "static",
+    BASE_DIR / "security_management/static",
+    BASE_DIR / "bills/static",
 ]
 
-STATIC_ROOT = BASE_DIR / "staticfiles"  # for collectstatic (safe to include)
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # ------------------------------
 # MEDIA FILES
 # ------------------------------
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # ------------------------------
 # SESSION SETTINGS
 # ------------------------------
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 SESSION_COOKIE_HTTPONLY = True
+SESSION_SAVE_EVERY_REQUEST = False
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

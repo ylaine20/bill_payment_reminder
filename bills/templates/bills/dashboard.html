@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Welcome Section -->
+    <div class="mb-4">
+        <h2></i> Welcome, {{ request.user.first_name|default:request.user.username }}!</h2>
+        <p class="text-muted">Here's an overview of your bills</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <!-- Total Bills -->
+        <div class="col-md-3">
+            <div class="card border-primary shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Total Bills</p>
+                            <h3 class="mb-0">{{ total_bills }}</h3>
+                        </div>
+                        <div class="text-primary">
+                            <i class="bi bi-receipt fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Bills -->
+        <div class="col-md-3">
+            <div class="card border-warning shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Pending Bills</p>
+                            <h3 class="mb-0 text-warning">{{ total_pending }}</h3>
+                            <small class="text-muted">Awaiting payment</small>
+                        </div>
+                        <div class="text-warning">
+                            <i class="bi bi-clock-history fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paid This Month -->
+        <div class="col-md-3">
+            <div class="card border-success shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Paid This Month</p>
+                            <h3 class="mb-0 text-success">{{ paid_this_month }}</h3>
+                            <small class="text-muted">Completed payments</small>
+                        </div>
+                        <div class="text-success">
+                            <i class="bi bi-check-circle fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overdue Bills -->
+        <div class="col-md-3">
+            <div class="card border-danger shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Overdue Bills</p>
+                            <h3 class="mb-0 text-danger">{{ overdue_count }}</h3>
+                            <small class="text-danger">Need attention</small>
+                        </div>
+                        <div class="text-danger">
+                            <i class="bi bi-exclamation-triangle fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Upcoming Bills -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-calendar-event"></i> Upcoming Bills</h5>
+                    <span class="badge bg-primary">Next 7 Days</span>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_bills %}
+                        <div class="list-group list-group-flush">
+                            {% for bill in upcoming_bills %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ bill.name }}</h6>
+                                            <small class="text-muted">
+                                                Due: {{ bill.due_date|date:"M d, Y" }}
+                                                {% if bill.is_overdue %}
+                                                    <span class="badge bg-danger ms-2">Overdue</span>
+                                                {% elif bill.is_due_soon %}
+                                                    <span class="badge bg-warning ms-2">Due Soon</span>
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                        <div class="text-end">
+                           <h5 class="mb-0">₱{{ bill.amount }}</h5>
+                                            <a href="{% url 'bill-pay' bill.pk %}" class="btn btn-sm btn-success mt-1">
+                                                <i class="bi bi-check-circle"></i> Pay
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-calendar-check fs-1"></i>
+                            <p class="mb-0 mt-2">No upcoming bills in the next 7 days</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Tips</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <i class="bi bi-arrow-repeat text-primary"></i>
+                            Set up automatic reminders for recurring bills
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-calendar-week text-primary"></i>
+                            Review your bills weekly to stay on top of payments
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-check-circle text-primary"></i>
+                            Mark bills as paid immediately after payment
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-receipt text-primary"></i>
+                            Upload receipts for better record keeping
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
