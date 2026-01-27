@@ -68,34 +68,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for user in users %}
+                        {% for account in users %}
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-circle bg-primary text-white me-2">
-                                        {{ user.first_name|first|default:user.username|first|upper }}
+                                        {{ account.first_name|first|default:account.username|first|upper }}
                                     </div>
                                     <div>
-                                        <strong>{{ user.first_name }} {{ user.last_name }}</strong>
-                                        {% if not user.first_name and not user.last_name %}
-                                        <span>{{ user.username }}</span>
+                                        <strong>{{ account.first_name }} {{ account.last_name }}</strong>
+                                        {% if not account.first_name and not account.last_name %}
+                                        <span>{{ account.username }}</span>
                                         {% endif %}
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ user.email }}</td>
-                            <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                            <td>{{ account.email }}</td>
+                            <td>{{ account.date_joined|date:"M d, Y" }}</td>
                             <td>
-                                {% if user.is_superuser %}
+                                {% if account.is_superuser %}
                                 <span class="badge bg-danger">Admin</span>
-                                {% elif user.is_staff %}
+                                {% elif account.is_staff %}
                                 <span class="badge bg-warning">Staff</span>
                                 {% else %}
                                 <span class="badge bg-secondary">User</span>
                                 {% endif %}
                             </td>
                             <td>
-                                {% if user.is_active %}
+                                {% if account.is_active %}
                                 <span class="badge bg-success">Active</span>
                                 {% else %}
                                 <span class="badge bg-danger">Inactive</span>
@@ -103,20 +103,20 @@
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <a href="{% url 'admin_user_detail' user.pk %}" class="btn btn-outline-info"
+                                    <a href="{% url 'admin_user_detail' account.pk %}" class="btn btn-outline-info"
                                         title="View">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="{% url 'admin_user_edit' user.pk %}" class="btn btn-outline-primary"
+                                    <a href="{% url 'admin_user_edit' account.pk %}" class="btn btn-outline-primary"
                                         title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    {% if user != request.user %}
-                                    <a href="{% url 'admin_user_toggle' user.pk %}" class="btn btn-outline-warning"
+                                    {% if account.pk != request.user.pk %}
+                                    <a href="{% url 'admin_user_toggle' account.pk %}" class="btn btn-outline-warning"
                                         title="Toggle Active">
                                         <i class="bi bi-power"></i>
                                     </a>
-                                    <a href="{% url 'admin_user_delete' user.pk %}" class="btn btn-outline-danger"
+                                    <a href="{% url 'admin_user_delete' account.pk %}" class="btn btn-outline-danger"
                                         title="Delete">
                                         <i class="bi bi-trash"></i>
                                     </a>
@@ -126,7 +126,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center py-5">
+                            <td colspan="6" class="text-center py-5">
                                 <i class="bi bi-people fs-1 text-muted"></i>
                                 <p class="text-muted mt-2">No users found</p>
                             </td>
