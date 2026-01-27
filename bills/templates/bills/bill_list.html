@@ -3,32 +3,37 @@
 {% block title %}Bills List - Bill Payment Reminder{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1><i class="bi bi-list-ul"></i> Bills List</h1>
-                    <p class="text-muted">Manage all your bills</p>
-                </div>
-                <a href="{% url 'bill-create' %}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Add New Bill
-                </a>
-            </div>
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-receipt text-primary"></i> My Bills</h2>
+            <p class="text-muted mb-0">Manage and track all your bills</p>
         </div>
+        <a href="{% url 'bill-create' %}" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-circle"></i> Add Bill
+        </a>
     </div>
 
-    <!-- Filter Buttons -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="btn-group" role="group">
-                <a href="{% url 'bills-list' %}" class="btn btn-outline-primary {% if not status_filter %}active{% endif %}">
-                    <i class="bi bi-list"></i> All
+    <!-- Status Filter Tabs -->
+    <div class="card mb-4">
+        <div class="card-body py-2">
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{% url 'bills-list' %}"
+                    class="btn {% if not status_filter %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                    <i class="bi bi-grid-3x3-gap"></i> All
+                    <span class="badge bg-light text-dark ms-1">{{ total_count|default:"" }}</span>
                 </a>
-                <a href="{% url 'bills-list' %}?status=pending" class="btn btn-outline-warning {% if status_filter == 'pending' %}active{% endif %}">
-                    <i class="bi bi-clock"></i> Pending
+                <a href="{% url 'bills-list' %}?status=pending"
+                    class="btn {% if status_filter == 'pending' %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                    <i class="bi bi-clock-history"></i> Pending
                 </a>
-                <a href="{% url 'bills-list' %}?status=paid" class="btn btn-outline-success {% if status_filter == 'paid' %}active{% endif %}">
+                <a href="{% url 'bills-list' %}?status=overdue"
+                    class="btn {% if status_filter == 'overdue' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                    <i class="bi bi-exclamation-triangle"></i> Overdue
+                </a>
+                <a href="{% url 'bills-list' %}?status=paid"
+                    class="btn {% if status_filter == 'paid' %}btn-success{% else %}btn-outline-success{% endif %}">
                     <i class="bi bi-check-circle"></i> Paid
                 </a>
             </div>
@@ -36,90 +41,98 @@
     </div>
 
     <!-- Bills Table -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    {% if bills %}
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Amount</th>
-                                    <th>Due Date</th>
-                                    <th>Category</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for bill in bills %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ bill.name }}</strong>
-                                        {% if bill.recurring %}
-                                        <i class="bi bi-arrow-repeat text-primary" title="Recurring bill"></i>
-                                        {% endif %}
-                                    </td>
-                                    <td><strong>₱{{ bill.amount }}</strong></td>
-                                    <td>
-                                        {{ bill.due_date|date:"M d, Y" }}
-                                        {% if bill.is_overdue %}
-                                        <span class="badge bg-danger ms-2">Overdue</span>
-                                        {% elif bill.is_due_soon %}
-                                        <span class="badge bg-warning ms-2">Due Soon</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-secondary">{{ bill.get_category_display }}</span>
-                                    </td>
-                                    <td>
-                                        {% if bill.status == 'paid' %}
-                                        <span class="badge bg-success">
-                                            <i class="bi bi-check-circle"></i> Paid
-                                        </span>
-                                        {% else %}
-                                        <span class="badge bg-warning">
-                                            <i class="bi bi-clock"></i> Pending
-                                        </span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="{% url 'bill-detail' bill.pk %}" class="btn btn-sm btn-outline-info" title="View">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a href="{% url 'bill-update' bill.pk %}" class="btn btn-sm btn-outline-primary" title="Edit">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            {% if bill.status == 'pending' %}
-                                            <a href="{% url 'bill-pay' bill.pk %}" class="btn btn-sm btn-outline-success" title="Mark as Paid">
-                                                <i class="bi bi-check-circle"></i>
-                                            </a>
-                                            {% endif %}
-                                            <a href="{% url 'bill-delete' bill.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="text-center py-5">
-                        <i class="bi bi-inbox fs-1 text-muted"></i>
-                        <p class="text-muted mt-3">No bills found. Start by adding a new bill!</p>
-                        <a href="{% url 'bill-create' %}" class="btn btn-primary mt-2">
-                            <i class="bi bi-plus-circle"></i> Add Your First Bill
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
+    <div class="card">
+        <div class="card-body p-0">
+            {% if bills %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Amount</th>
+                            <th>Due Date</th>
+                            <th>Alert</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bill in bills %}
+                        <tr>
+                            <td>
+                                <strong>{{ bill.name }}</strong>
+                                {% if bill.recurring %}
+                                <i class="bi bi-arrow-repeat text-primary" title="Recurring bill"></i>
+                                {% endif %}
+                            </td>
+                            <td><strong>₱{{ bill.amount }}</strong></td>
+                            <td>
+                                {{ bill.due_date|date:"M d, Y" }}
+                                <small class="text-muted d-block">{{ bill.due_date|date:"h:i A" }}</small>
+                            </td>
+                            <td>
+                                {% if bill.is_overdue %}
+                                <span class="badge bg-danger">Overdue</span>
+                                {% elif bill.is_due_soon %}
+                                <span class="badge bg-warning">Due Soon</span>
+                                {% else %}
+                                <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ bill.get_category_display }}</span>
+                            </td>
+                            <td>
+                                {% if bill.status == 'paid' %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i> Paid
+                                </span>
+                                {% else %}
+                                <span class="badge bg-warning">
+                                    <i class="bi bi-clock"></i> Pending
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'bill-detail' bill.pk %}" class="btn btn-sm btn-outline-info"
+                                        title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'bill-update' bill.pk %}" class="btn btn-sm btn-outline-primary"
+                                        title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {% if bill.status == 'pending' %}
+                                    <a href="{% url 'bill-pay' bill.pk %}" class="btn btn-sm btn-outline-success"
+                                        title="Mark as Paid">
+                                        <i class="bi bi-check-circle"></i>
+                                    </a>
+                                    {% endif %}
+                                    <a href="{% url 'bill-delete' bill.pk %}" class="btn btn-sm btn-outline-danger"
+                                        title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-inbox fs-1 text-muted"></i>
+                <p class="text-muted mt-3">No bills found. Start by adding a new bill!</p>
+                <a href="{% url 'bill-create' %}" class="btn btn-primary mt-2">
+                    <i class="bi bi-plus-circle"></i> Add Your First Bill
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
+</div>
+</div>
 </div>
 {% endblock %}

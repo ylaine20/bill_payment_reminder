@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Bill Payment Reminder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 580px;
+        }
+
+        /* Brand Header */
+        .brand-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .brand-logo i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            filter: drop-shadow(0 4px 8px rgba(37, 99, 235, 0.3));
+        }
+
+        .brand-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .brand-tagline {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        /* Register Card */
+        .register-card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 1.5rem;
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.15);
+            padding: 3rem 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .register-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .register-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+
+        /* Form Controls */
+        .form-label {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.625rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label i {
+            color: var(--primary-color);
+            font-size: 1.125rem;
+        }
+
+        .form-control {
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 0.875rem 1.125rem;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+            background: white;
+            outline: none;
+        }
+
+        /* Password Toggle */
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle .form-control {
+            padding-right: 3rem;
+        }
+
+        .password-toggle-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            transition: all 0.2s ease;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .password-toggle-icon:hover {
+            color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        /* Password Requirements */
+        .password-requirements {
+            margin-top: 0.75rem;
+            padding: 0.875rem;
+            background: rgba(37, 99, 235, 0.05);
+            border-radius: 0.5rem;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .password-requirements p {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .password-requirements ul {
+            margin: 0;
+            padding-left: 1.25rem;
+            list-style: none;
+        }
+
+        .password-requirements li {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+            position: relative;
+        }
+
+        .password-requirements li:before {
+            content: "•";
+            position: absolute;
+            left: -1rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* Register Button */
+        .btn-register {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border: none;
+            border-radius: 0.75rem;
+            color: white;
+            font-weight: 700;
+            font-size: 1.125rem;
+            padding: 1rem;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+            margin-top: 1rem;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.5);
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        }
+
+        .btn-register:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-register i {
+            margin-left: 0.5rem;
+        }
+
+        /* Login Link */
+        .login-link {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .login-link p {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .login-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+        }
+
+        .login-link a:hover {
+            background: rgba(37, 99, 235, 0.08);
+            text-decoration: underline;
+        }
+
+        /* Alerts */
+        .alert {
+            border-radius: 0.875rem;
+            border: 2px solid;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert i {
+            font-size: 1.25rem;
+            margin-right: 0.75rem;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            border-color: var(--success);
+            color: #065f46;
+        }
+
+        .alert-danger,
+        .alert-error {
+            background: #fee2e2;
+            border-color: var(--danger);
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            border-color: var(--primary-color);
+            color: #1e40af;
+        }
+
+        /* Form Validation Styles */
+        .form-control.is-invalid {
+            border-color: var(--danger);
+            background-image: none;
+        }
+
+        .form-control.is-invalid:focus {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+        }
+
+        .invalid-feedback {
+            display: block;
+            color: var(--danger);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-top: 0.375rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .register-container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .register-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .brand-name {
+                font-size: 1.5rem;
+            }
+
+            .register-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="register-container">
+        <!-- Brand Header -->
+        <div class="brand-header">
+            <div class="brand-logo">
+                <i class="bi bi-receipt"></i>
+            </div>
+            <h1 class="brand-name">Bill Reminder</h1>
+            <p class="brand-tagline">Never miss a payment again</p>
+        </div>
+
+        <!-- Display Messages -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} fade show" role="alert">
+            <i
+                class="bi bi-{% if message.tags == 'success' %}check-circle-fill{% elif message.tags == 'error' %}x-circle-fill{% else %}info-circle-fill{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Register Card -->
+        <div class="register-card">
+            <h2 class="register-title">Create Account</h2>
+            <p class="register-subtitle">Join us to manage your bills easily</p>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person-fill"></i>
+                            First Name
+                        </label>
+                        <input type="text" name="first_name"
+                            class="form-control{% if form.first_name.errors %} is-invalid{% endif %}"
+                            placeholder="Enter your first name" value="{{ form.first_name.value|default:'' }}" required
+                            autofocus>
+                        {% if form.first_name.errors %}
+                        <div class="invalid-feedback">{{ form.first_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person-fill"></i>
+                            Last Name
+                        </label>
+                        <input type="text" name="last_name"
+                            class="form-control{% if form.last_name.errors %} is-invalid{% endif %}"
+                            placeholder="Enter your last name" value="{{ form.last_name.value|default:'' }}" required>
+                        {% if form.last_name.errors %}
+                        <div class="invalid-feedback">{{ form.last_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="bi bi-envelope-fill"></i>
+                        Email
+                    </label>
+                    <input type="email" name="email"
+                        class="form-control{% if form.email.errors %} is-invalid{% endif %}"
+                        placeholder="Enter your email address" value="{{ form.email.value|default:'' }}" required>
+                    {% if form.email.errors %}
+                    <div class="invalid-feedback">{{ form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="bi bi-lock-fill"></i>
+                        Password
+                    </label>
+                    <div class="password-toggle">
+                        <input type="password" name="password1" id="password1"
+                            class="form-control{% if form.password1.errors %} is-invalid{% endif %}"
+                            placeholder="Create a strong password" required>
+                        <i class="bi bi-eye-slash password-toggle-icon" id="togglePassword1"></i>
+                    </div>
+                    {% if form.password1.errors %}
+                    <div class="invalid-feedback">{{ form.password1.errors.0 }}</div>
+                    {% endif %}
+                    <div class="password-requirements">
+                        <p>Password requirements:</p>
+                        <ul>
+                            <li>At least 8 characters</li>
+                            <li>Cannot be entirely numeric</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="bi bi-lock-fill"></i>
+                        Confirm Password
+                    </label>
+                    <div class="password-toggle">
+                        <input type="password" name="password2" id="password2"
+                            class="form-control{% if form.password2.errors %} is-invalid{% endif %}"
+                            placeholder="Re-enter your password" required>
+                        <i class="bi bi-eye-slash password-toggle-icon" id="togglePassword2"></i>
+                    </div>
+                    {% if form.password2.errors %}
+                    <div class="invalid-feedback">{{ form.password2.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Display form errors if any -->
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <i class="bi bi-x-circle-fill"></i>
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <div>{{ field.label }}: {{ error }}</div>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <button type="submit" class="btn-register">
+                    Create Account
+                    <i class="bi bi-arrow-right-circle-fill"></i>
+                </button>
+            </form>
+
+            <div class="login-link">
+                <p>Already have an account?
+                    <a href="{% url 'login' %}">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle password visibility for password1
+        const togglePassword1 = document.getElementById('togglePassword1');
+        const password1 = document.getElementById('password1');
+
+        togglePassword1.addEventListener('click', function () {
+            const type = password1.getAttribute('type') === 'password' ? 'text' : 'password';
+            password1.setAttribute('type', type);
+            this.classList.toggle('bi-eye');
+            this.classList.toggle('bi-eye-slash');
+        });
+
+        // Toggle password visibility for password2
+        const togglePassword2 = document.getElementById('togglePassword2');
+        const password2 = document.getElementById('password2');
+
+        togglePassword2.addEventListener('click', function () {
+            const type = password2.getAttribute('type') === 'password' ? 'text' : 'password';
+            password2.setAttribute('type', type);
+            this.classList.toggle('bi-eye');
+            this.classList.toggle('bi-eye-slash');
+        });
+
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+</body>
+
+</html>

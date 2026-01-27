@@ -100,3 +100,91 @@ class UserLoginForm(AuthenticationForm):
             'id': 'remember-me'
         })
     )
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    """
+    Form for updating user profile information
+    """
+    first_name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'First Name'
+        })
+    )
+    last_name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Last Name'
+        })
+    )
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Email Address'
+        })
+    )
+    
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'email']
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if CustomUser.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+            raise ValidationError("This email is already in use by another account.")
+        return email
+
+
+class ChangePasswordForm(forms.Form):
+    """
+    Form for changing user password
+    """
+    current_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Current Password'
+        })
+    )
+    new_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'New Password'
+        })
+    )
+    confirm_new_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm New Password'
+        })
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    def clean_current_password(self):
+        current_password = self.cleaned_data.get('current_password')
+        if not self.user.check_password(current_password):
+            raise ValidationError("Incorrect current password.")
+        return current_password
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        confirm_new_password = cleaned_data.get("confirm_new_password")
+
+        if new_password and confirm_new_password:
+            if new_password != confirm_new_password:
+                raise ValidationError("New passwords do not match.")
+            
+            # Simple password strength check
+            if len(new_password) < 8:
+                raise ValidationError("Password must be at least 8 characters long.")
+            if new_password.isdigit():
+                raise ValidationError("Password cannot be entirely numeric.")
+                
+        return cleaned_data
