@@ -44,8 +44,8 @@ def login_view(request):
     attempted_username = ''
     
     if request.method == 'POST':
-        # Get email from the form (it's submitted as 'username' field)
-        email = request.POST.get('username')
+        # Get email from the form
+        email = request.POST.get('email')
         password = request.POST.get('password')
         remember_me = request.POST.get('remember_me')
         attempted_username = email  # Save for form repopulation
