@@ -54,46 +54,52 @@ def admin_dashboard(request):
 @user_passes_test(is_admin, login_url='dashboard')
 def admin_user_list(request):
     """List all users with search and filter"""
-    users = CustomUser.objects.all()
-    
-    # Search
-    search = request.GET.get('search', '')
-    if search:
-        users = users.filter(
-            Q(username__icontains=search) |
-            Q(email__icontains=search) |
-            Q(first_name__icontains=search) |
-            Q(last_name__icontains=search)
-        )
-    
-    # Filter by role
-    role = request.GET.get('role', '')
-    if role == 'admin':
-        users = users.filter(is_superuser=True)
-    elif role == 'staff':
-        users = users.filter(is_staff=True, is_superuser=False)
-    elif role == 'user':
-        users = users.filter(is_staff=False, is_superuser=False)
-    
-    # Filter by status
-    status = request.GET.get('status', '')
-    if status == 'active':
-        users = users.filter(is_active=True)
-    elif status == 'inactive':
-        users = users.filter(is_active=False)
-    
-    # Pagination
-    paginator = Paginator(users.order_by('-date_joined'), 10)
-    page = request.GET.get('page', 1)
-    users = paginator.get_page(page)
-    
-    context = {
-        'users': users,
-        'search': search,
-        'role': role,
-        'status': status,
-    }
-    return render(request, 'security_management/admin/user_list.html', context)
+    try:
+        users = CustomUser.objects.all()
+        
+        # Search
+        search = request.GET.get('search', '')
+        if search:
+            users = users.filter(
+                Q(email__icontains=search) |
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search)
+            )
+        
+        # Filter by role
+        role = request.GET.get('role', '')
+        if role == 'admin':
+            users = users.filter(is_superuser=True)
+        elif role == 'staff':
+            users = users.filter(is_staff=True, is_superuser=False)
+        elif role == 'user':
+            users = users.filter(is_staff=False, is_superuser=False)
+        
+        # Filter by status
+        status = request.GET.get('status', '')
+        if status == 'active':
+            users = users.filter(is_active=True)
+        elif status == 'inactive':
+            users = users.filter(is_active=False)
+        
+        # Pagination
+        paginator = Paginator(users.order_by('-date_joined'), 10)
+        page = request.GET.get('page', 1)
+        users = paginator.get_page(page)
+        
+        context = {
+            'users': users,
+            'search': search,
+            'role': role,
+            'status': status,
+        }
+        return render(request, 'security_management/admin/user_list.html', context)
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error in admin_user_list: {str(e)}")
+        messages.error(request, f"An error occurred: {str(e)}")
+        return redirect('admin_dashboard')
 
 
 @login_required
