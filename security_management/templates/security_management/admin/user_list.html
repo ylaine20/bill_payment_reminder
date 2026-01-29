@@ -73,12 +73,12 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-circle bg-primary text-white me-2">
-                                        {{ account.first_name|first|default:account.username|first|upper }}
+                                        {{ account.first_name|first|default:account.email|first|upper }}
                                     </div>
                                     <div>
                                         <strong>{{ account.first_name }} {{ account.last_name }}</strong>
                                         {% if not account.first_name and not account.last_name %}
-                                        <span>{{ account.username }}</span>
+                                        <span>{{ account.email }}</span>
                                         {% endif %}
                                     </div>
                                 </div>
