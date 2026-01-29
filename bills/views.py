@@ -676,11 +676,13 @@ def calendar_events(request):
     start = request.GET.get('start', '')
     end = request.GET.get('end', '')
     
-    # Parse the date range
+    # Parse the date range from FullCalendar
     try:
-        end_date = datetime.fromisoformat(end.replace('Z', '+00:00')) if end else timezone.now() + timedelta(days=365)
+        start_date = datetime.fromisoformat(start.replace('Z', '+00:00')) if start else timezone.now()
+        end_date = datetime.fromisoformat(end.replace('Z', '+00:00')) if end else timezone.now() + timedelta(days=31)
     except:
-        end_date = timezone.now() + timedelta(days=365)
+        start_date = timezone.now()
+        end_date = timezone.now() + timedelta(days=31)
     
     # Get all bills (not just in range, we'll generate recurring events)
     bills = Bill.objects.filter(user=request.user)
@@ -701,28 +703,29 @@ def calendar_events(request):
         # Always show as all-day event (no time display)
         is_all_day = True
         
-        # Add the actual bill event
-        events.append({
-            'id': bill.id,
-            'title': f'{bill.name} - ₱{bill.amount}',
-            'start': bill.due_date.isoformat(),
-            'allDay': is_all_day,  # Hide time if midnight, show if specific time set
-            'backgroundColor': color,
-            'borderColor': color,
-            'extendedProps': {
-                'status': bill.status,
-                'category': bill.get_category_display(),
-                'amount': str(bill.amount),
-                'is_recurring': bill.recurring,
-            }
-        })
+        # Only add the actual bill event if it falls within the date range
+        if bill.due_date >= start_date and bill.due_date <= end_date:
+            events.append({
+                'id': bill.id,
+                'title': f'{bill.name} - ₱{bill.amount}',
+                'start': bill.due_date.isoformat(),
+                'allDay': is_all_day,
+                'backgroundColor': color,
+                'borderColor': color,
+                'extendedProps': {
+                    'status': bill.status,
+                    'category': bill.get_category_display(),
+                    'amount': str(bill.amount),
+                    'is_recurring': bill.recurring,
+                }
+            })
         
-        # Generate future recurring events (virtual - not yet in database)
+        # Generate future recurring events ONLY within the current view range
         if bill.recurring and bill.recurrence_frequency and bill.recurrence_frequency != 'none':
             # Calculate future occurrences
             current_date = bill.due_date
             occurrences_added = 0
-            max_occurrences = 12  # Show up to 12 future occurrences
+            max_occurrences = 12  # Limit iterations but only add if in date range
             
             while occurrences_added < max_occurrences:
                 # Calculate next date based on frequency
@@ -735,37 +738,39 @@ def calendar_events(request):
                 else:
                     break
                 
-                # Stop if we're past the calendar range
+                # Stop if we're past the calendar view range
                 if next_date > end_date:
                     break
                 
-                # Check if a bill already exists for this date (avoid duplicates)
-                existing = Bill.objects.filter(
-                    user=request.user,
-                    name=bill.name,
-                    due_date__date=next_date.date()
-                ).exists()
-                
-                if not existing:
-                    # Add virtual future event (faded yellow - clearly different from actual bills)
-                    events.append({
-                        'id': f'future_{bill.id}_{occurrences_added}',
-                        'title': f'{bill.name} - ₱{bill.amount}',
-                        'start': next_date.isoformat(),
-                        'allDay': True,
-                        'backgroundColor': '#fef3c7',  # Light yellow background
-                        'borderColor': '#f59e0b',  # Amber border
-                        'textColor': '#92400e',  # Dark amber text
-                        'extendedProps': {
-                            'status': 'future',
-                            'category': bill.get_category_display(),
-                            'amount': str(bill.amount),
-                            'is_recurring': True,
-                            'is_future': True,
-                            'original_bill_id': bill.id,  # Link to original bill
-                        }
-                    })
-                    occurrences_added += 1
+                # Only add if the date is within the current view range
+                if next_date >= start_date:
+                    # Check if a bill already exists for this date (avoid duplicates)
+                    existing = Bill.objects.filter(
+                        user=request.user,
+                        name=bill.name,
+                        due_date__date=next_date.date()
+                    ).exists()
+                    
+                    if not existing:
+                        # Add virtual future event (faded yellow - clearly different from actual bills)
+                        events.append({
+                            'id': f'future_{bill.id}_{occurrences_added}',
+                            'title': f'{bill.name} - ₱{bill.amount}',
+                            'start': next_date.isoformat(),
+                            'allDay': True,
+                            'backgroundColor': '#fef3c7',  # Light yellow background
+                            'borderColor': '#f59e0b',  # Amber border
+                            'textColor': '#92400e',  # Dark amber text
+                            'extendedProps': {
+                                'status': 'future',
+                                'category': bill.get_category_display(),
+                                'amount': str(bill.amount),
+                                'is_recurring': True,
+                                'is_future': True,
+                                'original_bill_id': bill.id,  # Link to original bill
+                            }
+                        })
+                        occurrences_added += 1
                 
                 current_date = next_date
     
