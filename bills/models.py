@@ -139,7 +139,7 @@ class Bill(models.Model):
     
     # Payment tracking
     payment_method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True, blank=True)
-    receipt_image = models.ImageField(upload_to='receipts/', blank=True, null=True)
+    receipt_image = models.ImageField(upload_to='receipts/', blank=True, null=True)  # Uses Cloudinary via DEFAULT_FILE_STORAGE
     payment_date = models.DateTimeField(null=True, blank=True)
     
     # Email reminder tracking
