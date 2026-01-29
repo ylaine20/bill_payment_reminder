@@ -31,16 +31,16 @@
                 <div class="col-md-3">
                     <select name="role" class="form-select">
                         <option value="">All Roles</option>
-                        <option value="admin" {% if role=='admin' %}selected{% endif %}>Admins</option>
-                        <option value="staff" {% if role=='staff' %}selected{% endif %}>Staff</option>
-                        <option value="user" {% if role=='user' %}selected{% endif %}>Regular Users</option>
+                        <option value="admin" {% if role == 'admin' %}selected{% endif %}>Admins</option>
+                        <option value="staff" {% if role == 'staff' %}selected{% endif %}>Staff</option>
+                        <option value="user" {% if role == 'user' %}selected{% endif %}>Regular Users</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <select name="status" class="form-select">
                         <option value="">All Status</option>
-                        <option value="active" {% if status=='active' %}selected{% endif %}>Active</option>
-                        <option value="inactive" {% if status=='inactive' %}selected{% endif %}>Inactive</option>
+                        <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+                        <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
                     </select>
                 </div>
                 <div class="col-md-2">
