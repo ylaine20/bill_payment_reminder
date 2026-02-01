@@ -2,6 +2,11 @@ from pathlib import Path
 import os
 import dj_database_url
 
+# Import Cloudinary FIRST before Django loads
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Get secret key from environment variable or use default for development
@@ -15,6 +20,27 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+# ------------------------------
+# CLOUDINARY CONFIGURATION (MUST BE BEFORE INSTALLED_APPS)
+# ------------------------------
+# Configure Cloudinary SDK immediately
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+    api_key=os.environ.get('CLOUDINARY_API_KEY', ''),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET', ''),
+    secure=True
+)
+
+# FORCE Cloudinary storage - set UNCONDITIONALLY
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Debug logging
+if os.environ.get('CLOUDINARY_CLOUD_NAME'):
+    print(f"[CLOUDINARY] ✓ Using Cloudinary storage: {os.environ.get('CLOUDINARY_CLOUD_NAME')}")
+else:
+    print("[CLOUDINARY] ✗ WARNING: CLOUDINARY_CLOUD_NAME not set!")
+
 
 # ------------------------------
 # INSTALLED APPS
@@ -140,38 +166,18 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ------------------------------
-# MEDIA FILES & CLOUDINARY
+# MEDIA FILES
 # ------------------------------
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Cloudinary configuration for cloud image storage
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
-
-# Configure Cloudinary
+# Cloudinary storage config (Django cloudinary_storage package config)
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
 }
-
-# Configure Cloudinary SDK
-cloudinary.config(
-    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
-    api_key=os.environ.get('CLOUDINARY_API_KEY', ''),
-    api_secret=os.environ.get('CLOUDINARY_API_SECRET', ''),
-    secure=True
-)
-
-# FORCE Cloudinary for media files when cloud name is set
-# This fixes the issue where DEFAULT_FILE_STORAGE wasn't being set properly
-if os.environ.get('CLOUDINARY_CLOUD_NAME'):
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    print(f"[CLOUDINARY] Using Cloudinary storage: {os.environ.get('CLOUDINARY_CLOUD_NAME')}")  # Debug log
-else:
-    print("[CLOUDINARY] WARNING: CLOUDINARY_CLOUD_NAME not set, using local storage")  # Debug log
+# Note: DEFAULT_FILE_STORAGE is already set above before INSTALLED_APPS
 
 # ------------------------------
 # SESSION SETTINGS
