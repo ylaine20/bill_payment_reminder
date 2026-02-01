@@ -172,8 +172,8 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# WhiteNoise serves static files via middleware (configured in MIDDLEWARE above)
-# No need to set STATICFILES_STORAGE in Django 5.2+ (use STORAGES instead)
+# Backwards compatibility for django-cloudinary-storage (it still checks this setting)
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # ------------------------------
 # MEDIA FILES
