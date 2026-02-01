@@ -146,15 +146,32 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Cloudinary configuration for cloud image storage
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+# Configure Cloudinary
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
 }
 
-# Use Cloudinary for media files in production
+# Configure Cloudinary SDK
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+    api_key=os.environ.get('CLOUDINARY_API_KEY', ''),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET', ''),
+    secure=True
+)
+
+# FORCE Cloudinary for media files when cloud name is set
+# This fixes the issue where DEFAULT_FILE_STORAGE wasn't being set properly
 if os.environ.get('CLOUDINARY_CLOUD_NAME'):
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    print(f"[CLOUDINARY] Using Cloudinary storage: {os.environ.get('CLOUDINARY_CLOUD_NAME')}")  # Debug log
+else:
+    print("[CLOUDINARY] WARNING: CLOUDINARY_CLOUD_NAME not set, using local storage")  # Debug log
 
 # ------------------------------
 # SESSION SETTINGS
