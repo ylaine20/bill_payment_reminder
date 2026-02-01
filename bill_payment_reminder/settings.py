@@ -41,7 +41,6 @@ if os.environ.get('CLOUDINARY_CLOUD_NAME'):
 else:
     print("[CLOUDINARY] ✗ WARNING: CLOUDINARY_CLOUD_NAME not set!")
 
-
 # ------------------------------
 # INSTALLED APPS
 # ------------------------------
