@@ -110,11 +110,19 @@ def bill_create(request):
     if request.method == 'POST':
         form = BillForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
-            bill = form.save(commit=False)
-            bill.user = request.user
-            bill.save()
-            messages.success(request, 'Bill created successfully!')
-            return redirect('dashboard')
+            try:
+                bill = form.save(commit=False)
+                bill.user = request.user
+                bill.save()
+                messages.success(request, 'Bill created successfully!')
+                return redirect('dashboard')
+            except Exception as e:
+                # Log the error for debugging
+                import traceback
+                error_details = traceback.format_exc()
+                print(f"ERROR SAVING BILL: {e}")
+                print(f"ERROR DETAILS: {error_details}")
+                messages.error(request, f'Error saving bill: {str(e)}')
         else:
             messages.error(request, 'Please correct the errors below.')
             print("Form errors:", form.errors)
