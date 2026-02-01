@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Cloudinary Status{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="bi bi-cloud-check"></i> Cloudinary Configuration Status</h4>
+        </div>
+        <div class="card-body">
+            <h5>Environment Variables</h5>
+            <table class="table table-bordered">
+                <tr>
+                    <th>CLOUDINARY_CLOUD_NAME</th>
+                    <td>
+                        {{ cloudinary_cloud_name }}
+                        {% if cloudinary_cloud_name == 'NOT SET' %}
+                        <span class="badge bg-danger">✗ NOT SET</span>
+                        {% else %}
+                        <span class="badge bg-success">✓ SET</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>CLOUDINARY_API_KEY</th>
+                    <td>
+                        {{ cloudinary_api_key }}
+                        {% if cloudinary_api_key == 'NOT SET' %}
+                        <span class="badge bg-danger">✗ NOT SET</span>
+                        {% else %}
+                        <span class="badge bg-success">✓ SET</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>CLOUDINARY_API_SECRET</th>
+                    <td>
+                        {{ cloudinary_api_secret_set }}
+                        {% if cloudinary_api_secret_set == 'NO' %}
+                        <span class="badge bg-danger">✗ NOT SET</span>
+                        {% else %}
+                        <span class="badge bg-success">✓ SET</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+
+            <h5 class="mt-4">Django Settings</h5>
+            <table class="table table-bordered">
+                <tr>
+                    <th>DEFAULT_FILE_STORAGE</th>
+                    <td>
+                        <code>{{ default_file_storage }}</code>
+                        {% if 'cloudinary' in default_file_storage %}
+                        <span class="badge bg-success">✓ USING CLOUDINARY</span>
+                        {% else %}
+                        <span class="badge bg-danger">✗ NOT USING CLOUDINARY</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>DEBUG</th>
+                    <td>
+                        {{ debug_mode }}
+                        {% if debug_mode %}
+                        <span class="badge bg-warning">⚠ DEBUG ON</span>
+                        {% else %}
+                        <span class="badge bg-success">✓ DEBUG OFF</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>'cloudinary' in INSTALLED_APPS</th>
+                    <td>
+                        {{ cloudinary_in_installed_apps }}
+                        {% if cloudinary_in_installed_apps %}
+                        <span class="badge bg-success">✓ YES</span>
+                        {% else %}
+                        <span class="badge bg-danger">✗ NO</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>'cloudinary_storage' in INSTALLED_APPS</th>
+                    <td>
+                        {{ cloudinary_storage_in_installed_apps }}
+                        {% if cloudinary_storage_in_installed_apps %}
+                        <span class="badge bg-success">✓ YES</span>
+                        {% else %}
+                        <span class="badge bg-danger">✗ NO</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+
+            <div class="alert alert-info mt-4">
+                <h5><i class="bi bi-info-circle"></i> What Should You See?</h5>
+                <ul class="mb-0">
+                    <li>All three Cloudinary environment variables should be SET</li>
+                    <li>DEFAULT_FILE_STORAGE should contain "cloudinary"</li>
+                    <li>Both 'cloudinary' and 'cloudinary_storage' should be in INSTALLED_APPS</li>
+                    <li>If DEBUG is ON in production, that's okay but not recommended</li>
+                </ul>
+            </div>
+
+            {% if default_file_storage == 'NOT SET' or 'cloudinary' not in default_file_storage %}
+            <div class="alert alert-danger">
+                <h5><i class="bi bi-exclamation-triangle"></i> Problem Detected!</h5>
+                <p><strong>Cloudinary is NOT being used for file storage.</strong></p>
+                <p>This means uploaded images are being saved locally and won't work on Render.</p>
+                <p><strong>Fix:</strong> Make sure CLOUDINARY_CLOUD_NAME environment variable is set on Render.</p>
+            </div>
+            {% else %}
+            <div class="alert alert-success">
+                <h5><i class="bi bi-check-circle"></i> Configuration Looks Good!</h5>
+                <p>Cloudinary should be working. If images still aren't visible, try uploading a NEW image to test.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

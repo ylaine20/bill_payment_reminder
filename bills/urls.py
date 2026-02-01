@@ -33,4 +33,7 @@ urlpatterns = [
     # Calendar
     path('calendar/', views.calendar_view, name='calendar'),
     path('api/calendar-events/', views.calendar_events, name='calendar_events'),
+    
+    # Debug (remove in production after fixing)
+    path('debug/cloudinary-status/', lambda request: __import__('bills.cloudinary_debug', fromlist=['cloudinary_status']).cloudinary_status(request), name='cloudinary_status'),
 ]
