@@ -32,7 +32,18 @@ cloudinary.config(
     secure=True
 )
 
-# FORCE Cloudinary storage - set UNCONDITIONALLY
+# Django 5.2+ uses STORAGES instead of DEFAULT_FILE_STORAGE
+# This is the CORRECT way to configure Cloudinary in Django 5.2+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+# Also set for backwards compatibility
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Debug logging
