@@ -186,6 +186,7 @@ CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
+    'PREFIX': '',  # Remove default /media/ prefix to fix URL generation
 }
 # Note: DEFAULT_FILE_STORAGE is already set above before INSTALLED_APPS
 
