@@ -103,19 +103,6 @@
                         <div class="col-12">
                             <label class="text-muted small">Receipt/Bill Image</label>
                             
-                            <!-- DEBUG INFO - Remove after testing -->
-                            <div class="alert alert-info small mb-2">
-                                <strong>Debug Info:</strong><br>
-                                Image Path: {{ bill.receipt_image }}<br>
-                                Image URL: {{ bill.receipt_image.url }}<br>
-                                {% if 'cloudinary' in bill.receipt_image.url %}
-                                ✓ Using Cloudinary
-                                {% else %}
-                                ⚠ Using Local Storage (won't work on hosted system)
-                                {% endif %}
-                            </div>
-                            <!-- END DEBUG INFO -->
-                            
                             <div class="mt-2">
                                 <img src="{{ bill.receipt_image.url }}" alt="{{ bill.name }} receipt"
                                     class="img-fluid border rounded" style="max-width: 100%; height: auto;"
